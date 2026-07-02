@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluent 2 Design System — Developer Reference</title>
+  <style>
+    :root {
+      --brand:        #117865;
+      --brand-light:  #E3F7EF;
+      --brand-dark:   #0C695A;
+      --text:         #1a1a1a;
+      --text-muted:   #616161;
+      --border:       #e0e0e0;
+      --bg:           #ffffff;
+      --bg-alt:       #f9fafb;
+      --bg-code:      #f3f4f6;
+      --code-text:    #1f2937;
+      --tag-bg:       #e8f5f0;
+      --tag-text:     #0C695A;
+      --radius:       6px;
+      --shadow:       0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Layout ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    nav {
+      width: 260px;
+      min-width: 260px;
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    nav .logo {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    nav .logo h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brand);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    nav .logo p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    nav ul { list-style: none; padding: 0 8px; }
+
+    nav ul li a {
+      display: block;
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      transition: background .12s, color .12s;
+    }
+
+    nav ul li a:hover { background: var(--brand-light); color: var(--brand-dark); }
+
+    nav ul li.section-label {
+      padding: 14px 12px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #9ca3af;
+    }
+
+    nav ul li.sub a { padding-left: 24px; font-size: 13px; }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      padding: 48px 56px;
+    }
+
+    /* ── Typography ── */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .subtitle span {
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-weight: 500;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 52px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--brand);
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 28px;
+      margin-bottom: 10px;
+    }
+
+    h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 20px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    p { margin-bottom: 12px; }
+
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* ── Blockquote ── */
+    blockquote {
+      border-left: 3px solid var(--brand);
+      background: var(--brand-light);
+      padding: 10px 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      color: var(--brand-dark);
+    }
+
+    /* ── Code ── */
+    code {
+      background: var(--bg-code);
+      color: #b91c1c;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 13px;
+    }
+
+    pre {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin: 14px 0 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    .code-comment { color: #6c7086; }
+    .code-keyword { color: #cba6f7; }
+    .code-string  { color: #a6e3a1; }
+    .code-type    { color: #89dceb; }
+    .code-prop    { color: #89b4fa; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 14px 0 24px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    thead tr {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: var(--bg-alt); }
+    tbody tr:hover { background: var(--brand-light); }
+
+    td {
+      padding: 9px 14px;
+      vertical-align: top;
+    }
+
+    td code { font-size: 12px; }
+
+    /* ── Color swatch ── */
+    .swatch {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.1);
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Component card grid ── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      margin: 16px 0 28px;
+    }
+
+    .comp-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      transition: box-shadow .15s, border-color .15s;
+    }
+
+    .comp-card:hover {
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(17,120,101,.12);
+    }
+
+    .comp-card .comp-name {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--brand-dark);
+      margin-bottom: 4px;
+    }
+
+    .comp-card .comp-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Decision tree ── */
+    .decision-tree {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      font-family: "Cascadia Code", monospace;
+      font-size: 13px;
+      line-height: 2;
+      margin: 14px 0 20px;
+    }
+
+    .dt-q  { color: #89b4fa; }
+    .dt-a  { color: #a6e3a1; }
+    .dt-arrow { color: #6c7086; }
+
+    /* ── Badge pills ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .badge-green  { background: #d1fae5; color: #065f46; }
+    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red    { background: #fee2e2; color: #991b1b; }
+
+    /* ── Section header with pill ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 52px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--brand);
+    }
+
+    .section-header h2 { margin: 0; border: none; padding: 0; }
+
+    /* ── Callout ── */
+    .callout {
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--brand);
+      background: var(--bg-alt);
+      padding: 14px 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 16px 0;
+      font-size: 13.5px;
+    }
+
+    .callout.warning { border-left-color: #f59e0b; background: #fffbeb; }
+    .callout.danger  { border-left-color: #ef4444; background: #fef2f2; }
+
+    /* ── Pending table ── */
+    .priority-medium td:first-child { color: #d97706; font-weight: 600; }
+    .priority-low    td:first-child { color: #6b7280; }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar nav -->
+  <nav>
+    <div class="logo">
+      <h2>Fluent 2 DS</h2>
+      <p>Developer Reference</p>
+    </div>
+    <ul>
+      <li class="section-label">Overview</li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li class="section-label">Tokens</li>
+      <li class="sub"><a href="#brand-colors">Brand Colors</a></li>
+      <li class="sub"><a href="#spacing">Spacing</a></li>
+      <li class="sub"><a href="#typography">Typography</a></li>
+      <li class="sub"><a href="#border-radius">Border Radius</a></li>
+      <li class="sub"><a href="#ribbon-colors">Ribbon Colors</a></li>
+      <li class="sub"><a href="#dataviz-colors">Data Viz Colors</a></li>
+      <li class="section-label">Components</li>
+      <li class="sub"><a href="#inputs">Input Controls</a></li>
+      <li class="sub"><a href="#selection">Selection Controls</a></li>
+      <li class="sub"><a href="#buttons">Buttons & Actions</a></li>
+      <li class="sub"><a href="#navigation">Navigation & Layout</a></li>
+      <li class="sub"><a href="#overlays">Overlays & Popovers</a></li>
+      <li class="sub"><a href="#feedback">Feedback & Status</a></li>
+      <li class="sub"><a href="#display">Display & Content</a></li>
+      <li class="section-label">Patterns</li>
+      <li><a href="#border-fix">Border Fix Pattern</a></li>
+      <li class="section-label">Tooling</li>
+      <li><a href="#storybook">Storybook Guide</a></li>
+      <li><a href="#pending">Pending Work</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main content -->
+  <main>
+    <h1>Fluent 2 Design System</h1>
+    <div class="subtitle">
+      <span>React 18</span>
+      <span>TypeScript</span>
+      <span>@fluentui/react-components v9</span>
+      <span>Griffel CSS-in-JS</span>
+      <span>Storybook v8</span>
+    </div>
+
+    <!-- ── Architecture ── -->
+    <div class="section-header" id="architecture">
+      <h2>Architecture Overview</h2>
+    </div>
+
+    <p>This library wraps Fluent UI v9 components with project-specific defaults, validation wrappers, and custom tokens. All styling uses Griffel <code>makeStyles</code> — <strong>never plain CSS, Tailwind, or inline styles</strong>.</p>
+
+    <pre><code>src/
+├── components/ui/      ← All wrapped components (one file per component)
+├── stories/            ← Storybook stories (one file per component)
+├── themes/             ← lightTheme, darkTheme, highContrastTheme
+│   ├── lightTheme.ts
+│   ├── darkTheme.ts
+│   └── highContrastTheme.ts
+└── tokens/             ← Custom token groups
+    ├── brand.ts        ← Brand color ramp (16 shades)
+    ├── borderRadius.ts
+    ├── spacing.ts
+    ├── typography.ts
+    ├── ribbonColors.ts ← 7 ribbon icon color tokens
+    ├── dataVizColors.ts← 94 data viz tokens
+    └── index.ts</code></pre>
+
+    <h3>Theming</h3>
+    <p>Wrap your app root with <code>FluentProvider</code>. Three themes available: <code>lightTheme</code>, <code>darkTheme</code>, <code>highContrastTheme</code>.</p>
+
+    <pre><code><span class="code-keyword">import</span> { FluentProvider } <span class="code-keyword">from</span> <span class="code-string">"@fluentui/react-components"</span>;
+<span class="code-keyword">import</span> { lightTheme } <span class="code-keyword">from</span> <span class="code-string">"./themes"</span>;
+
+&lt;FluentProvider theme={lightTheme}&gt;
+  &lt;App /&gt;
+&lt;/FluentProvider&gt;</code></pre>
+
+    <hr />
+
+    <!-- ── Token Reference ── -->
+    <div class="section-header" id="brand-colors">
+      <h2>Brand Colors</h2>
+      <span class="badge badge-blue">src/tokens/brand.ts</span>
+    </div>
+
+    <p>A 16-shade ramp from shade <code>10</code> (darkest) to <code>160</code> (lightest). Used by <code>createLightTheme()</code> and <code>createDarkTheme()</code> to auto-generate all <code>colorBrand*</code> tokens.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Shade</th><th>Hex</th><th>Swatch</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td><code>#001919</code></td><td><span class="swatch" style="background:#001919"></span></td><td>Deepest dark</td></tr>
+          <tr><td>80</td><td><code>#117865</code></td><td><span class="swatch" style="background:#117865"></span></td><td><strong>Primary brand</strong></td></tr>
+          <tr><td>100</td><td><code>#2AAC94</code></td><td><span class="swatch" style="background:#2AAC94"></span></td><td><strong>Dark primary</strong></td></tr>
+          <tr><td>160</td><td><code>#E3F7EF</code></td><td><span class="swatch" style="background:#E3F7EF"></span></td><td>Lightest tint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <strong>Dark mode overrides</strong> — In dark mode, brand foreground tokens are lightened for WCAG AA contrast: <code>colorBrandForeground1: brandColors[110]</code>, <code>colorBrandForeground2: brandColors[120]</code>
+    </div>
+
+    <hr />
+
+    <h2 id="spacing">Spacing <span class="badge badge-blue">src/tokens/spacing.ts</span></h2>
+    <p>Never hardcode <code>px</code> values. Always use spacing tokens in <code>makeStyles</code>.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>Fluent Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>vertical.xxs</code></td><td><code>spacingVerticalXXS</code></td><td>2px</td></tr>
+          <tr><td><code>vertical.xs</code></td><td><code>spacingVerticalXS</code></td><td>4px</td></tr>
+          <tr><td><code>vertical.s</code></td><td><code>spacingVerticalS</code></td><td>6px</td></tr>
+          <tr><td><code>vertical.m</code></td><td><code>spacingVerticalM</code></td><td>8px</td></tr>
+          <tr><td><code>vertical.mNudge</code></td><td><code>spacingVerticalMNudge</code></td><td>10px</td></tr>
+          <tr><td><code>vertical.l</code></td><td><code>spacingVerticalL</code></td><td>12px</td></tr>
+          <tr><td><code>vertical.xl</code></td><td><code>spacingVerticalXL</code></td><td>16px</td></tr>
+          <tr><td><code>vertical.xxl</code></td><td><code>spacingVerticalXXL</code></td><td>20px</td></tr>
+          <tr><td><code>vertical.xxxl</code></td><td><code>spacingVerticalXXXL</code></td><td>36px</td></tr>
+          <tr><td><code>horizontal.*</code></td><td>Same scale</td><td>Same values</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <h2 id="typography">Typography <span class="badge badge-blue">src/tokens/typography.ts</span></h2>
+
+    <h3>Font Size Scale</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>Token</th><th>Size</th><th>Semantic Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>fontSize.xs</code></td><td><code>fontSizeBase100</code></td><td>10px</td><td>Caption 2</td></tr>
+          <tr><td><code>fontSize.sm</code></td><td><code>fontSizeBase200</code></td><td>12px</td><td>Caption 1</td></tr>
+          <tr><td><code>fontSize.md</code></td><td><code>fontSizeBase300</code></td><td>14px</td><td>Body 1 (default)</td></tr>
+          <tr><td><code>fontSize.base</code></td><td><code>fontSizeBase400</code></td><td>16px</td><td>Body 2 / Subtitle 2</td></tr>
+          <tr><td><code>fontSize.lg</code></td><td><code>fontSizeBase500</code></td><td>20px</td><td>Subtitle 1</td></tr>
+          <tr><td><code>fontSize.xl</code></td><td><code>fontSizeBase600</code></td><td>24px</td><td>Title 3</td></tr>
+          <tr><td><code>fontSize.title2</code></td><td><code>fontSizeHero700</code></td><td>28px</td><td>Title 2</td></tr>
+          <tr><td><code>fontSize.title1</code></td><td><code>fontSizeHero800</code></td><td>32px</td><td>Title 1</td></tr>
+          <tr><td><code>fontSize.largeTitle</code></td><td><code>fontSizeHero900</code></td><td>40px</td><td>Large Title</td></tr>
+          <tr><td><code>fontSize.display</code></td><td><code>fontSizeHero1000</code></td><td>68px</td><td>Display</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Available Typography Variants</h3>
+    <p>Use the <code>Typography</code> component for semantic text. Variants: <code>display</code>, <code>largeTitle</code>, <code>title1</code>, <code>title2</code>, <code>title3</code>, <code>subtitle1</code>, <code>subtitle2</code>, <code>body1</code>, <code>body1Strong</code>, <code>body2</code>, <code>caption1</code>, <code>caption2</code>.</p>
+
+    <hr />
+
+    <h2 id="border-radius">Border Radius <span class="badge badge-blue">src/tokens/borderRadius.ts</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>Token</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>none</code></td><td><code>borderRadiusNone</code></td><td>0</td></tr>
+          <tr><td><code>small</code></td><td><code>borderRadiusSmall</code></td><td>2px</td></tr>
+          <tr><td><code>medium</code></td><td><code>borderRadiusMedium</code></td><td>4px</td></tr>
+          <tr><td><code>large</code></td><td><code>borderRadiusLarge</code></td><td>6px</td></tr>
+          <tr><td><code>xlarge</code></td><td><code>borderRadiusXLarge</code></td><td>8px</td></tr>
+          <tr><td><code>circular</code></td><td><code>borderRadiusCircular</code></td><td>10000px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <h2 id="ribbon-colors">Ribbon Icon Colors <span class="badge badge-blue">src/tokens/ribbonColors.ts</span></h2>
+    <p>Custom tokens for color icons in ribbons and toolbars. <strong>Not part of Fluent's built-in palette</strong> — injected into theme objects and accessed via CSS variables.</p>
+    <p><strong>Usage:</strong> <code>import { ribbonTokens } from "../tokens"</code> → <code>color: ribbonTokens.colorRibbonIconSuccess</code></p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>Semantic</th></tr></thead>
+        <tbody>
+          <tr><td><code>colorRibbonIconDismiss</code></td><td><span class="swatch" style="background:#B10E1C"></span><code>#B10E1C</code></td><td><span class="swatch" style="background:#DC626D"></span><code>#DC626D</code></td><td>Delete / remove</td></tr>
+          <tr><td><code>colorRibbonIconManage</code></td><td><span class="swatch" style="background:#004377"></span><code>#004377</code></td><td><span class="swatch" style="background:#5EB0FF"></span><code>#5EB0FF</code></td><td>Settings / manage</td></tr>
+          <tr><td><code>colorRibbonIconMove</code></td><td><span class="swatch" style="background:#881798"></span><code>#881798</code></td><td><span class="swatch" style="background:#CF87FF"></span><code>#CF87FF</code></td><td>Move / reorder</td></tr>
+          <tr><td><code>colorRibbonIconObject</code></td><td><span class="swatch" style="background:#424242"></span><code>#424242</code></td><td><span class="swatch" style="background:#D6D6D6"></span><code>#D6D6D6</code></td><td>Objects / items</td></tr>
+          <tr><td><code>colorRibbonIconSuccess</code></td><td><span class="swatch" style="background:#107C10"></span><code>#107C10</code></td><td><span class="swatch" style="background:#54B054"></span><code>#54B054</code></td><td>Success / done</td></tr>
+          <tr><td><code>colorRibbonIconTrigger</code></td><td><span class="swatch" style="background:#8F4B00"></span><code>#8F4B00</code></td><td><span class="swatch" style="background:#FFB74D"></span><code>#FFB74D</code></td><td>Triggers / automation</td></tr>
+          <tr><td><code>colorRibbonIconWarning</code></td><td><span class="swatch" style="background:#835B00"></span><code>#835B00</code></td><td><span class="swatch" style="background:#FFD54F"></span><code>#FFD54F</code></td><td>Warning / attention</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <h2 id="dataviz-colors">Data Visualization Colors <span class="badge badge-blue">src/tokens/dataVizColors.ts</span></h2>
+    <p>94 tokens across four groups. <strong>Import:</strong> <code>import { dataVizTokens } from "../tokens"</code></p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Count</th><th>Prefix</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td>Data slots</td><td>20 light + 20 dark</td><td><code>colorDataSlot1…colorDataSlot20</code></td><td>Categorical series in charts</td></tr>
+          <tr><td>Sequential</td><td>6</td><td><code>colorSequenceStart…colorSequenceEnd</code></td><td>Single-hue sequential scales</td></tr>
+          <tr><td>Diverging</td><td>6</td><td><code>colorDivergingNegative…colorDivergingPositive</code></td><td>Diverging scales (e.g., loss/gain)</td></tr>
+          <tr><td>Alert</td><td>4</td><td><code>colorAlertCritical/High/Medium/Low</code></td><td>Severity indicators</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <!-- ── Component Catalog ── -->
+    <div class="section-header" id="inputs">
+      <h2>Input Components</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Component</th><th>Description</th><th>Key Props</th></tr></thead>
+        <tbody>
+          <tr><td><strong>TextField</strong></td><td>Single-line text input for names, emails, passwords</td><td><code>label</code>, <code>validationState</code>, <code>appearance</code>, <code>size</code></td></tr>
+          <tr><td><strong>Textarea</strong></td><td>Multi-line text for comments, descriptions, notes</td><td><code>label</code>, <code>rows</code>, <code>resize</code>, <code>validationState</code></td></tr>
+          <tr><td><strong>SearchInput</strong></td><td>Text input pre-wired for search (ARIA searchbox, dismiss button)</td><td><code>placeholder</code>, <code>appearance</code>, <code>size</code></td></tr>
+          <tr><td><strong>Combobox</strong></td><td>Text input + dropdown list; supports filtering and multi-select</td><td><code>label</code>, <code>options</code>, <code>multiselect</code></td></tr>
+          <tr><td><strong>Dropdown</strong></td><td>Button-like trigger + popup list; no free-text entry</td><td><code>options</code>, <code>multiselect</code>, <code>appearance</code>, <code>size</code></td></tr>
+          <tr><td><strong>Select</strong></td><td>Native &lt;select&gt; with Fluent styling; best for mobile</td><td><code>label</code>, <code>appearance</code>, <code>size</code></td></tr>
+          <tr><td><strong>SpinButton</strong></td><td>Numeric input with increment/decrement; min/max/step bounded</td><td><code>label</code>, <code>min</code>, <code>max</code>, <code>step</code></td></tr>
+          <tr><td><strong>DatePicker</strong></td><td>Popup calendar for picking a single date (compat package)</td><td><code>label</code>, <code>minDate</code>, <code>maxDate</code>, <code>placeholder</code></td></tr>
+          <tr><td><strong>TimePicker</strong></td><td>Dropdown/freeform time selector, 12h/24h (compat package)</td><td><code>label</code>, <code>hourCycle</code>, <code>increment</code></td></tr>
+          <tr><td><strong>TagPicker</strong></td><td>Search input + removable tag chips for multi-select from large sets</td><td><code>options</code>, <code>placeholder</code></td></tr>
+          <tr><td><strong>Slider</strong></td><td>Drag-thumb range control for relative quantity settings</td><td><code>min</code>, <code>max</code>, <code>step</code>, <code>vertical</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Which input control to use?</h3>
+    <div class="decision-tree">
+      <span class="dt-q">Single value, freeform text?</span>         <span class="dt-arrow">→</span> <span class="dt-a">TextField / Textarea</span>
+<span class="dt-q">Numeric, bounded range?</span>              <span class="dt-arrow">→</span> <span class="dt-a">SpinButton (increment) or Slider (drag)</span>
+<span class="dt-q">Select from short list (2–5)?</span>        <span class="dt-arrow">→</span> <span class="dt-a">RadioGroup or Select</span>
+<span class="dt-q">Select from list, filterable?</span>        <span class="dt-arrow">→</span> <span class="dt-a">Combobox</span>
+<span class="dt-q">Select from list, no typing?</span>         <span class="dt-arrow">→</span> <span class="dt-a">Dropdown</span>
+<span class="dt-q">Multiple selections from large set?</span>  <span class="dt-arrow">→</span> <span class="dt-a">TagPicker</span>
+<span class="dt-q">Date?</span>                                <span class="dt-arrow">→</span> <span class="dt-a">DatePicker</span>
+<span class="dt-q">Time?</span>                                <span class="dt-arrow">→</span> <span class="dt-a">TimePicker</span>
+<span class="dt-q">Search query?</span>                        <span class="dt-arrow">→</span> <span class="dt-a">SearchInput</span>
+    </div>
+
+    <hr />
+
+    <h2 id="selection">Selection Controls</h2>
+    <div class="comp-grid">
+      <div class="comp-card">
+        <div class="comp-name">Checkbox</div>
+        <div class="comp-desc">Binary yes/no or multi-select. 3 states: checked, unchecked, indeterminate.</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-name">RadioGroup</div>
+        <div class="comp-desc">Mutually exclusive choice from 2–8 options. All options visible simultaneously.</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-name">Switch</div>
+        <div class="comp-desc">Immediate-effect on/off toggle. Action happens the moment it's flipped.</div>
+      </div>
+    </div>
+
+    <hr />
+
+    <h2 id="buttons">Buttons &amp; Actions</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Component</th><th>Description</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Button</strong></td><td>Primary interaction trigger</td><td>Any operation that doesn't navigate</td></tr>
+          <tr><td><strong>CompoundButton</strong></td><td>Button + secondary description line</td><td>When the label needs context (wizards, feature cards)</td></tr>
+          <tr><td><strong>ToggleButton</strong></td><td>Two-state checked/unchecked button</td><td>Toolbar formatting (Bold, Italic), mode switches</td></tr>
+          <tr><td><strong>SplitButton</strong></td><td>Primary action + chevron for secondary options</td><td>"Save" + "Save as…"</td></tr>
+          <tr><td><strong>MenuButton</strong></td><td>Always opens a menu (no direct action)</td><td>"More actions", "Export to…"</td></tr>
+          <tr><td><strong>Link</strong></td><td>Navigation to URL or inline textual action</td><td>Page navigation, links within body text</td></tr>
+          <tr><td><strong>Toolbar</strong></td><td>Grouped actions with arrow-key navigation</td><td>3+ related contextual actions</td></tr>
+          <tr><td><strong>Menu</strong></td><td>Contextual popup of actions</td><td>Right-click or "More" menus</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Button Appearances</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Appearance</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>primary</code></td><td>Most important action on a surface — one per surface</td></tr>
+          <tr><td><code>default</code> (secondary)</td><td>Standard actions</td></tr>
+          <tr><td><code>subtle</code></td><td>Low-emphasis actions, no border</td></tr>
+          <tr><td><code>transparent</code></td><td>Inline or toolbar contexts</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <h2 id="navigation">Navigation &amp; Layout</h2>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-name">Accordion</div><div class="comp-desc">Expandable/collapsible content sections. Conserves vertical space.</div></div>
+      <div class="comp-card"><div class="comp-name">Tabs</div><div class="comp-desc">Parallel content views; 2–8 tabs of related content.</div></div>
+      <div class="comp-card"><div class="comp-name">Breadcrumb</div><div class="comp-desc">Hierarchical location indicator. Use for 3+ levels.</div></div>
+      <div class="comp-card"><div class="comp-name">Tree</div><div class="comp-desc">Expandable nested data hierarchy.</div></div>
+      <div class="comp-card"><div class="comp-name">SideNav</div><div class="comp-desc">Persistent vertical top-level app navigation.</div></div>
+    </div>
+
+    <hr />
+
+    <h2 id="overlays">Overlays &amp; Popovers</h2>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-name">Dialog</div><div class="comp-desc">Modal window. Blocks background. For critical decisions.</div></div>
+      <div class="comp-card"><div class="comp-name">ConfirmDialog</div><div class="comp-desc">Pre-composed Dialog for destructive action confirmation.</div></div>
+      <div class="comp-card"><div class="comp-name">Drawer</div><div class="comp-desc">Slide-in panel. Retains page context. OverlayDrawer or InlineDrawer.</div></div>
+      <div class="comp-card"><div class="comp-name">Popover</div><div class="comp-desc">Non-modal floating surface. Interactive content anchored to trigger.</div></div>
+      <div class="comp-card"><div class="comp-name">Tooltip</div><div class="comp-desc">Brief hover/focus label. Non-interactive. Clarifies icon buttons.</div></div>
+      <div class="comp-card"><div class="comp-name">TeachingPopover</div><div class="comp-desc">Multi-step onboarding popup. Feature discovery flows.</div></div>
+    </div>
+
+    <hr />
+
+    <h2 id="feedback">Feedback &amp; Status</h2>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-name">Toast</div><div class="comp-desc">Transient non-blocking notification. Auto-dismisses.</div></div>
+      <div class="comp-card"><div class="comp-name">MessageBar</div><div class="comp-desc">Persistent status banner. Stays until dismissed.</div></div>
+      <div class="comp-card"><div class="comp-name">ProgressBar</div><div class="comp-desc">Loading progress. Determinate or indeterminate.</div></div>
+      <div class="comp-card"><div class="comp-name">Spinner</div><div class="comp-desc">Indeterminate loading indicator (circular).</div></div>
+      <div class="comp-card"><div class="comp-name">Skeleton</div><div class="comp-desc">Shimmer placeholder matching content layout shape.</div></div>
+      <div class="comp-card"><div class="comp-name">CounterBadge</div><div class="comp-desc">Numeric unread/count indicator on nav items or avatars.</div></div>
+      <div class="comp-card"><div class="comp-name">PresenceBadge</div><div class="comp-desc">Online status indicator (available/away/busy/offline…).</div></div>
+      <div class="comp-card"><div class="comp-name">StatusBadge</div><div class="comp-desc">Semantic status label for item states (Pending, Active…).</div></div>
+      <div class="comp-card"><div class="comp-name">Rating</div><div class="comp-desc">Star-based score input or display.</div></div>
+      <div class="comp-card"><div class="comp-name">Divider</div><div class="comp-desc">Horizontal/vertical separator. Optional center label.</div></div>
+    </div>
+
+    <hr />
+
+    <h2 id="display">Display &amp; Content</h2>
+    <div class="comp-grid">
+      <div class="comp-card"><div class="comp-name">Card</div><div class="comp-desc">Bounded container for a discrete content subject.</div></div>
+      <div class="comp-card"><div class="comp-name">DataCard</div><div class="comp-desc">KPI metric card with value, label, and trend.</div></div>
+      <div class="comp-card"><div class="comp-name">DataTable</div><div class="comp-desc">Full-featured sortable/selectable data grid.</div></div>
+      <div class="comp-card"><div class="comp-name">Persona</div><div class="comp-desc">Avatar + name + secondary/tertiary text for user identity.</div></div>
+      <div class="comp-card"><div class="comp-name">UserAvatar</div><div class="comp-desc">Circular user image/initials/fallback icon.</div></div>
+      <div class="comp-card"><div class="comp-name">AvatarGroup</div><div class="comp-desc">Stacked cluster of avatars for group representation.</div></div>
+      <div class="comp-card"><div class="comp-name">Tag</div><div class="comp-desc">Read-only compact category label.</div></div>
+      <div class="comp-card"><div class="comp-name">InteractionTag</div><div class="comp-desc">Clickable or dismissible tag (filter bars, chips).</div></div>
+      <div class="comp-card"><div class="comp-name">Typography</div><div class="comp-desc">Pre-composed text styles from the Fluent type ramp.</div></div>
+      <div class="comp-card"><div class="comp-name">Icon</div><div class="comp-desc">Fluent icon renderer with token-based size/color.</div></div>
+      <div class="comp-card"><div class="comp-name">Image</div><div class="comp-desc">&lt;img&gt; wrapper with fit, shape, shadow, responsive sizing.</div></div>
+      <div class="comp-card"><div class="comp-name">InfoLabel</div><div class="comp-desc">Label + info icon with explanatory Popover/Tooltip.</div></div>
+      <div class="comp-card"><div class="comp-name">EmptyState</div><div class="comp-desc">Placeholder for zero-content states.</div></div>
+      <div class="comp-card"><div class="comp-name">PageHeader</div><div class="comp-desc">Page title bar with breadcrumb and primary actions.</div></div>
+      <div class="comp-card"><div class="comp-name">Stepper</div><div class="comp-desc">Step progress indicator for sequential workflows.</div></div>
+      <div class="comp-card"><div class="comp-name">FileUpload</div><div class="comp-desc">Drag-and-drop file input with MIME type filtering.</div></div>
+    </div>
+
+    <hr />
+
+    <!-- ── Border Fix ── -->
+    <div class="section-header" id="border-fix">
+      <h2>Border Fix Pattern</h2>
+    </div>
+
+    <h3>The Double-Border Problem</h3>
+    <p>Fluent v9 inputs render their bottom accent indicator via a <code>::after</code> pseudo-element positioned at <code>bottom: -1px</code> (outside the element box). This creates a visible double-dark-line when adding a custom indicator.</p>
+
+    <div class="callout danger">
+      <strong>Root causes discovered via compiled JS inspection:</strong><br/>
+      1. <code>::after</code> is positioned OUTSIDE the element — <code>overflow: hidden</code> on the component itself does NOT clip it<br/>
+      2. <code>borderBottomColor</code> on the Input root is set separately from the <code>::after</code> — overriding one without the other creates visual stacking<br/>
+      3. DatePicker's <code>className</code> routes to the <code>fui-Input</code> span directly — descendant selectors <code>"&amp; .fui-Input"</code> never work
+    </div>
+
+    <h3>The Fix Pattern</h3>
+    <pre><code><span class="code-comment">// Wrapper div with clipPath + ::after indicator</span>
+&lt;div className={mergeClasses(
+  styles.inputWrapper,
+  !disabled &amp;&amp; validationState !== <span class="code-string">"error"</span> &amp;&amp; styles.inputWrapperIndicator
+)}&gt;
+  &lt;FluentInput
+    className={mergeClasses(
+      styles.normalizeInput,   <span class="code-comment">// Reset borderBottomColor to neutral</span>
+      styles.killAfter,        <span class="code-comment">// Kill Fluent's built-in ::after</span>
+      validationState === <span class="code-string">"error"</span> &amp;&amp; styles.errorBorder,
+    )}
+  /&gt;
+&lt;/div&gt;</code></pre>
+
+    <pre><code><span class="code-keyword">const</span> useStyles = makeStyles({
+  inputWrapper: {
+    position: <span class="code-string">"relative"</span>,
+    clipPath: <span class="code-string">"inset(0px round 4px)"</span>,  <span class="code-comment">// Clips indicator to border-radius</span>
+  },
+  inputWrapperIndicator: {
+    <span class="code-string">"::after"</span>: {
+      content: <span class="code-string">'""'</span>, position: <span class="code-string">"absolute"</span>, bottom: <span class="code-string">"0px"</span>,
+      left: <span class="code-string">"0px"</span>, right: <span class="code-string">"0px"</span>, height: <span class="code-string">"1px"</span>,
+      backgroundColor: tokens.colorNeutralStrokeAccessible,
+    },
+    <span class="code-string">":focus-within::after"</span>: {
+      height: <span class="code-string">"2px"</span>, backgroundColor: tokens.colorBrandStroke1,
+    },
+  },
+  killAfter: { <span class="code-string">"::after"</span>: { content: <span class="code-string">"none"</span> } },
+  normalizeInput: {
+    borderBottomColor: tokens.colorNeutralStroke1,
+    <span class="code-string">":hover"</span>: { borderBottomColor: tokens.colorNeutralStroke1Hover },
+  },
+});</code></pre>
+
+    <div class="callout">
+      <strong>Why <code>clipPath: inset(0px round 4px)</code> instead of <code>overflow: hidden</code>?</strong><br/>
+      <code>overflow: hidden</code> would clip portal-based dropdowns (Combobox, Dropdown, TagPicker).
+      <code>clipPath</code> does NOT affect portals — they render outside the DOM tree.
+    </div>
+
+    <h3>Griffel CSS Rules</h3>
+    <p>Griffel uses atomic CSS — <strong>never use border shorthand</strong>:</p>
+    <pre><code><span class="code-comment">// ❌ Wrong</span>
+border: `1px solid ${tokens.colorNeutralStroke1}`,
+
+<span class="code-comment">// ✓ Correct — individual properties per side</span>
+borderTopWidth: <span class="code-string">"1px"</span>,
+borderTopStyle: <span class="code-string">"solid"</span>,
+borderTopColor: tokens.colorNeutralStroke1,
+<span class="code-comment">// ... repeat for Right, Bottom, Left</span></code></pre>
+
+    <hr />
+
+    <!-- ── Storybook ── -->
+    <div class="section-header" id="storybook">
+      <h2>Storybook Guide</h2>
+    </div>
+
+    <h3>Starting Storybook</h3>
+    <pre><code>cd "/Users/MuralidharanE/Claude/Projects/Fluent2 UI/fluent2-app"
+npm run storybook
+<span class="code-comment"># Opens at http://localhost:6006</span></code></pre>
+
+    <h3>Story File Template</h3>
+    <pre><code><span class="code-keyword">import</span> type { Meta, StoryObj } <span class="code-keyword">from</span> <span class="code-string">"@storybook/react"</span>;
+<span class="code-keyword">import</span> { ComponentName } <span class="code-keyword">from</span> <span class="code-string">"../components/ui/ComponentName"</span>;
+
+<span class="code-keyword">const</span> meta: <span class="code-type">Meta</span>&lt;<span class="code-keyword">typeof</span> ComponentName&gt; = {
+  title: <span class="code-string">"Components/ComponentName"</span>,
+  component: ComponentName,
+  tags: [<span class="code-string">"autodocs"</span>],
+  parameters: {
+    docs: { description: { component: <span class="code-string">"What this component is and when to use it."</span> } },
+  },
+  argTypes: {
+    disabled: { control: <span class="code-string">"boolean"</span> },
+    appearance: { control: <span class="code-string">"select"</span>, options: [<span class="code-string">"outline"</span>, <span class="code-string">"underline"</span>, <span class="code-string">"filled-darker"</span>] },
+  },
+};
+<span class="code-keyword">export default</span> meta;</code></pre>
+
+    <h3>Story Naming Conventions</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Story Name</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>Default</code></td><td>Most common usage with minimal props</td></tr>
+          <tr><td><code>Required</code></td><td>Required field state</td></tr>
+          <tr><td><code>Error / Warning / Success</code></td><td>Validation states</td></tr>
+          <tr><td><code>Disabled</code></td><td>Disabled state</td></tr>
+          <tr><td><code>Small / Large</code></td><td>Size variants</td></tr>
+          <tr><td><code>Underline / FilledDarker</code></td><td>Appearance variants</td></tr>
+          <tr><td><code>DarkMode</code></td><td>Dark theme with FluentProvider decorator</td></tr>
+          <tr><td><code>AllValidationStates</code></td><td>All states in one render (custom render fn)</td></tr>
+          <tr><td><code>AllAppearances / AllSizes</code></td><td>Visual comparison grid</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Known Issues</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Issue</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Autodocs crash on Docs tab</td><td><span class="badge badge-yellow">Mitigated</span></td><td><code>autodocs: false</code> in main.ts. Docs written via <code>parameters.docs.description</code>.</td></tr>
+          <tr><td>ESLint errors blocking build</td><td><span class="badge badge-green">Fixed</span></td><td><code>webpackFinal</code> removes <code>ESLintWebpackPlugin</code> from Storybook webpack</td></tr>
+          <tr><td>esbuild platform mismatch in sandbox</td><td><span class="badge badge-green">Not an issue</span></td><td>Only affects Linux sandbox. Run <code>npm run storybook</code> on Mac terminal directly.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr />
+
+    <!-- ── Pending ── -->
+    <h2 id="pending">Pending Work</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Priority</th><th>Task</th></tr></thead>
+        <tbody>
+          <tr class="priority-medium"><td>Medium</td><td>Verify Textarea and SearchInput border normalization in browser DevTools</td></tr>
+          <tr class="priority-low"><td>Low</td><td>Clean up ESLint warnings: <code>Field.tsx</code> (mergeClasses), <code>MenuButton.tsx</code> (MenuList), <code>Persona.tsx</code> (FluentPersonaProps), <code>SplitButton.tsx</code> (FluentMenuButtonProps), <code>Toast.tsx</code> (useId), <code>Tree.tsx</code> (hasChildren)</td></tr>
+          <tr class="priority-low"><td>Low</td><td>Fix <code>FileUpload.tsx</code> jsx-a11y/no-redundant-roles warning</td></tr>
+          <tr class="priority-low"><td>Low</td><td>Fix <code>Tree.tsx</code> react-hooks/exhaustive-deps warning</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

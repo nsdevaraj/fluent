@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluent 2 — Component Variant Comparison</title>
+  <style>
+    :root {
+      --brand:      #117865;
+      --brand-dark: #0C695A;
+      --brand-bg:   #E3F7EF;
+      --text:       #1a1a1a;
+      --muted:      #5c5c5c;
+      --border:     #d0d0d0;
+      --bg:         #ffffff;
+      --bg-alt:     #f7f8fa;
+      --green-bg:   #d1fae5;  --green-txt: #064e3b;
+      --red-bg:     #fee2e2;  --red-txt:   #7f1d1d;
+      --amber-bg:   #fef3c7;  --amber-txt: #78350f;
+      --blue-bg:    #dbeafe;  --blue-txt:  #1e3a5f;
+      --gray-bg:    #f3f4f6;  --gray-txt:  #374151;
+      --diff-bg:    #fff7ed;  --diff-txt:  #9a3412;
+      --diff-border:#fb923c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: #f0f2f5;
+      padding: 24px;
+    }
+
+    header {
+      background: var(--brand-dark);
+      color: #fff;
+      padding: 20px 28px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    header h1 { font-size: 20px; font-weight: 700; }
+    header p  { font-size: 12px; opacity: .8; margin-top: 4px; }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .leg-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .dot { width: 14px; height: 14px; border-radius: 100px; flex-shrink: 0; }
+
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 16px; align-items: center;
+    }
+    .filter-bar label { font-size: 12px; color: var(--muted); }
+    .filter-bar input {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 5px 10px; font-size: 12px; background: var(--bg); width: 240px;
+    }
+
+    .status-summary {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--bg); border-radius: 8px; padding: 14px 20px;
+      min-width: 140px; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .stat-card .num { font-size: 28px; font-weight: 700; line-height: 1; }
+    .stat-card .lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .stat-card.green .num { color: #059669; }
+    .stat-card.amber .num { color: #d97706; }
+    .stat-card.blue  .num { color: #2563eb; }
+    .stat-card.orange .num { color: #ea580c; }
+
+    .wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+
+    table { width: 100%; border-collapse: collapse; background: var(--bg); }
+
+    thead tr.h1 th {
+      background: var(--brand-dark); color: #fff;
+      padding: 10px 12px; font-size: 12px; font-weight: 700;
+      text-align: center; border: 1px solid rgba(255,255,255,.15);
+    }
+    thead tr.h2 th {
+      background: var(--brand); color: #fff;
+      padding: 8px 12px; font-size: 11px; font-weight: 600;
+      text-align: center; border: 1px solid rgba(255,255,255,.15);
+    }
+    thead tr.h1 th:first-child,
+    thead tr.h2 th:first-child { text-align: left; }
+
+    tr.section-row td {
+      background: var(--brand-bg); color: var(--brand-dark);
+      font-weight: 700; font-size: 11px;
+      text-transform: uppercase; letter-spacing: .07em;
+      padding: 7px 12px;
+      border-top: 2px solid var(--brand); border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:not(.section-row) { border-bottom: 1px solid var(--border); }
+    tbody tr:not(.section-row):hover { background: #f0faf6; }
+    tbody tr:not(.section-row):nth-child(even) { background: var(--bg-alt); }
+    tbody tr:not(.section-row):nth-child(even):hover { background: #f0faf6; }
+
+    td {
+      padding: 9px 12px; vertical-align: top;
+      border-right: 1px solid var(--border);
+      font-size: 12.5px; line-height: 1.5;
+    }
+    td:last-child { border-right: none; }
+
+    td.comp-name {
+      font-weight: 700; color: var(--brand-dark);
+      white-space: nowrap; min-width: 130px;
+    }
+    td.comp-name .custom-tag {
+      display: inline-block; font-size: 9px; padding: 1px 5px;
+      border-radius: 3px; background: var(--gray-bg); color: var(--gray-txt);
+      font-weight: 600; margin-left: 5px; vertical-align: middle;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .chip {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 100px; font-size: 11px;
+      font-weight: 500; white-space: nowrap;
+    }
+    /* Green = what we currently have */
+    .chip-ok       { background: var(--green-bg); color: var(--green-txt); }
+    /* Blue = official item that also exists in current (no action needed) */
+    .chip-official { background: var(--blue-bg);  color: var(--blue-txt); }
+    /* Orange = official item MISSING from current → needs to be added */
+    .chip-diff     {
+      background: var(--diff-bg); color: var(--diff-txt);
+      border: 1.5px solid var(--diff-border); font-weight: 700;
+    }
+    .chip-na       { background: var(--gray-bg);  color: var(--gray-txt); }
+
+    td.note { min-width: 220px; max-width: 320px; }
+
+    .add-item {
+      display: flex; align-items: flex-start;
+      gap: 5px; margin-bottom: 4px; font-size: 11.5px;
+    }
+    .add-item::before { content: "＋"; color: #059669; font-weight: 700; flex-shrink: 0; }
+
+    .remove-item {
+      display: flex; align-items: flex-start;
+      gap: 5px; margin-bottom: 4px; font-size: 11.5px;
+    }
+    .remove-item::before { content: "−"; color: #dc2626; font-weight: 700; flex-shrink: 0; }
+
+    .ok-note   { font-size: 11.5px; color: #059669; font-weight: 600; }
+    .custom-note { font-size: 11.5px; color: var(--muted); font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Fluent 2 — Component Variant Comparison</h1>
+  <p>Current implementation vs. official @fluentui/react-components v9 · Sourced from GitHub TypeScript types + npm READMEs</p>
+</header>
+
+<div class="status-summary">
+  <div class="stat-card"><div class="num">59</div><div class="lbl">Total Components</div></div>
+  <div class="stat-card green"><div class="num">17</div><div class="lbl">Fully Covered ✓</div></div>
+  <div class="stat-card orange"><div class="num">24</div><div class="lbl">Has Gaps (orange chips)</div></div>
+  <div class="stat-card blue"><div class="num">18</div><div class="lbl">Custom / No Official Equiv.</div></div>
+</div>
+
+<div class="legend">
+  <div class="leg-item">
+    <span class="dot" style="background:var(--green-bg);border:1.5px solid #6ee7b7"></span>
+    <strong>Green</strong> — We already have this
+  </div>
+  <div class="leg-item">
+    <span class="dot" style="background:var(--blue-bg);border:1.5px solid #93c5fd"></span>
+    <strong>Blue</strong> — Official; already covered
+  </div>
+  <div class="leg-item">
+    <span class="dot" style="background:var(--diff-bg);border:1.5px solid var(--diff-border)"></span>
+    <strong style="color:var(--diff-txt)">Orange (bold)</strong> — Missing from our code → needs to be added
+  </div>
+  <div class="leg-item">
+    <span class="dot" style="background:var(--gray-bg);border:1.5px solid #d1d5db"></span>
+    <strong>Gray</strong> — N/A
+  </div>
+  <div class="leg-item" style="margin-left:8px"><span style="color:#059669;font-weight:700">＋</span> Add</div>
+  <div class="leg-item"><span style="color:#dc2626;font-weight:700">−</span> Consider removing</div>
+</div>
+
+<div class="filter-bar">
+  <label>Filter:</label>
+  <input id="filterInput" placeholder="Search component name…" oninput="filterTable()" />
+</div>
+
+<div class="wrap">
+<table id="compTable">
+  <thead>
+    <tr class="h1">
+      <th rowspan="2" style="min-width:130px;text-align:left">Component</th>
+      <th colspan="2">What We Have (Current)</th>
+      <th colspan="2">Official Fluent UI v9 &nbsp;<span style="font-weight:400;opacity:.8;font-size:10px">🟠 = missing from ours</span></th>
+      <th rowspan="2" style="min-width:220px">Notes — What to Add / Remove</th>
+    </tr>
+    <tr class="h2">
+      <th style="min-width:160px">Size</th>
+      <th style="min-width:200px">States / Appearances</th>
+      <th style="min-width:170px">Size</th>
+      <th style="min-width:210px">States / Appearances</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ═══ BUTTONS ═══ -->
+    <tr class="section-row"><td colspan="6">Buttons &amp; Actions</td></tr>
+
+    <tr>
+      <td class="comp-name">Button</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">primary</span><span class="chip chip-ok">secondary</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">loading</span><span class="chip chip-ok">icon</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">primary</span><span class="chip chip-official">secondary</span><span class="chip chip-diff">outline</span><span class="chip chip-official">subtle</span><span class="chip chip-diff">transparent</span><span class="chip chip-diff">shape: rounded/circular/square</span><span class="chip chip-diff">disabledFocusable</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size</div>
+        <div class="add-item">Add <strong>outline</strong> + <strong>transparent</strong> appearances</div>
+        <div class="add-item">Add <strong>shape</strong> prop (rounded / circular / square)</div>
+        <div class="add-item">Add <strong>disabledFocusable</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">CompoundButton</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">primary</span><span class="chip chip-ok">secondary</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">primary</span><span class="chip chip-official">secondary</span><span class="chip chip-diff">outline</span><span class="chip chip-official">subtle</span><span class="chip chip-diff">transparent</span><span class="chip chip-diff">shape: rounded/circular/square</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size</div>
+        <div class="add-item">Add <strong>outline</strong> + <strong>transparent</strong> appearances</div>
+        <div class="add-item">Add <strong>shape</strong> prop</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">ToggleButton</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">primary</span><span class="chip chip-ok">secondary</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">checked</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">primary</span><span class="chip chip-official">secondary</span><span class="chip chip-diff">outline</span><span class="chip chip-official">subtle</span><span class="chip chip-diff">transparent</span><span class="chip chip-diff">shape: rounded/circular/square</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size</div>
+        <div class="add-item">Add <strong>outline</strong> + <strong>transparent</strong> appearances</div>
+        <div class="add-item">Add <strong>shape</strong> prop</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">SplitButton</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">primary</span><span class="chip chip-ok">secondary</span><span class="chip chip-ok">outline</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">primary</span><span class="chip chip-official">secondary</span><span class="chip chip-official">outline</span><span class="chip chip-diff">subtle</span><span class="chip chip-diff">transparent</span><span class="chip chip-diff">shape: rounded/circular/square</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>subtle</strong> + <strong>transparent</strong> appearances</div>
+        <div class="add-item">Add <strong>shape</strong> prop</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">MenuButton</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">primary</span><span class="chip chip-ok">secondary</span><span class="chip chip-ok">outline</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">transparent</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">primary</span><span class="chip chip-official">secondary</span><span class="chip chip-official">outline</span><span class="chip chip-official">subtle</span><span class="chip chip-official">transparent</span><span class="chip chip-diff">shape: rounded/circular/square</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>shape</strong> prop</div>
+        <div class="ok-note">✓ Sizes &amp; appearances fully covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Link</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">inline</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">default</span><span class="chip chip-official">subtle</span><span class="chip chip-official">inline</span><span class="chip chip-diff">disabledFocusable</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>disabledFocusable</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Toolbar</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">with toggles</span><span class="chip chip-ok">vertical</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">vertical</span><span class="chip chip-official">checkedValues</span></div></td>
+      <td class="note"><div class="ok-note">✓ Fully covered</div></td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Menu</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">dividers</span><span class="chip chip-ok">icons</span><span class="chip chip-ok">disabled items</span><span class="chip chip-ok">grouped</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">openOnHover</span><span class="chip chip-diff">openOnContext</span><span class="chip chip-diff">persistOnItemClick</span><span class="chip chip-diff">hasCheckmarks</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>context menu</strong> (right-click) story</div>
+        <div class="add-item">Add <strong>checkmark items</strong> story</div>
+      </td>
+    </tr>
+
+    <!-- ═══ INPUT ═══ -->
+    <tr class="section-row"><td colspan="6">Input Components</td></tr>
+
+    <tr>
+      <td class="comp-name">TextField<br/><small style="font-weight:400;color:var(--muted)">wraps Input</small></td>
+      <td><div class="chips"><span class="chip chip-ok">small</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">error</span><span class="chip chip-ok">warning</span><span class="chip chip-ok">success</span><span class="chip chip-ok">required</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">underline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-diff">readOnly</span><span class="chip chip-official">disabled</span><span class="chip chip-official">required</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>medium</strong> + <strong>large</strong> size stories</div>
+        <div class="add-item">Add appearance stories: <strong>underline / filled-darker / filled-lighter</strong></div>
+        <div class="add-item">Add <strong>readOnly</strong> state</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Textarea</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">error</span><span class="chip chip-ok">warning</span><span class="chip chip-ok">success</span><span class="chip chip-ok">required</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-diff">resize: none/vertical/both</span><span class="chip chip-diff">readOnly</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small / medium / large</strong> size stories</div>
+        <div class="add-item">Add appearance stories: <strong>outline / filled-darker / filled-lighter</strong></div>
+        <div class="add-item">Add <strong>resize</strong> + <strong>readOnly</strong> stories</div>
+        <div class="remove-item">Textarea has <strong>no underline</strong> appearance — do not add it</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">SearchInput</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">underline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-official">disabled</span></div></td>
+      <td class="note">
+        <div class="add-item">Add appearance stories: <strong>underline / filled-darker / filled-lighter</strong></div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Combobox</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">error</span><span class="chip chip-ok">required</span><span class="chip chip-ok">grouped</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">underline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-diff">freeform</span><span class="chip chip-diff">clearable</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small / medium / large</strong> size stories</div>
+        <div class="add-item">Add all appearance stories</div>
+        <div class="add-item">Add <strong>freeform</strong> + <strong>clearable</strong> stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Dropdown</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">outline</span><span class="chip chip-ok">underline</span><span class="chip chip-ok">filled-darker</span><span class="chip chip-ok">filled-lighter</span><span class="chip chip-ok">multiselect</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">grouped</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">outline</span><span class="chip chip-official">underline</span><span class="chip chip-official">filled-darker</span><span class="chip chip-official">filled-lighter</span><span class="chip chip-official">multiselect</span><span class="chip chip-diff">clearable</span><span class="chip chip-diff">error/warning/success</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>clearable</strong> story</div>
+        <div class="add-item">Add <strong>validation state</strong> stories</div>
+        <div class="ok-note">✓ Sizes &amp; appearances fully covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Select</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">error</span><span class="chip chip-ok">required</span><span class="chip chip-ok">grouped</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">underline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small / medium / large</strong> size stories</div>
+        <div class="add-item">Add all appearance stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">SpinButton</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">outline</span><span class="chip chip-ok">underline</span><span class="chip chip-ok">filled-darker</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">with suffix</span><span class="chip chip-ok">bounded</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">outline</span><span class="chip chip-official">underline</span><span class="chip chip-official">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-diff">readOnly</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small</strong> + <strong>medium</strong> size stories</div>
+        <div class="add-item">Add <strong>filled-lighter</strong> appearance</div>
+        <div class="add-item">Add <strong>readOnly</strong> state</div>
+      </td>
+    </tr>
+
+    <!-- ═══ DATE / TIME / PICKERS ═══ -->
+    <tr class="section-row"><td colspan="6">Date / Time / Pickers</td></tr>
+
+    <tr>
+      <td class="comp-name">DatePicker<br/><small style="font-weight:400;color:var(--muted)">compat pkg</small></td>
+      <td><div class="chips"><span class="chip chip-na">no size (compat)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">required</span><span class="chip chip-ok">min/max</span><span class="chip chip-ok">allowTextInput</span><span class="chip chip-ok">error</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">mondayStart</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size (compat)</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">mondayStart / firstDayOfWeek</span><span class="chip chip-diff">showWeekNumbers</span><span class="chip chip-diff">borderless</span><span class="chip chip-diff">highlightCurrentMonth</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>showWeekNumbers</strong> + <strong>borderless</strong> stories</div>
+        <div class="ok-note">✓ Core states covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">TimePicker<br/><small style="font-weight:400;color:var(--muted)">compat pkg</small></td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">outline</span><span class="chip chip-ok">underline</span><span class="chip chip-ok">filled-darker</span><span class="chip chip-ok">error/warning/success</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">12h clock</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">outline</span><span class="chip chip-official">underline</span><span class="chip chip-official">filled-darker</span><span class="chip chip-diff">filled-lighter</span><span class="chip chip-diff">freeform</span><span class="chip chip-diff">clearable</span><span class="chip chip-diff">showSeconds</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size</div>
+        <div class="add-item">Add <strong>filled-lighter</strong> appearance</div>
+        <div class="add-item">Add <strong>freeform</strong> + <strong>clearable</strong> + <strong>showSeconds</strong></div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">TagPicker</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">required</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">error/warning/success</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span><span class="chip chip-diff">extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">outline</span><span class="chip chip-diff">underline</span><span class="chip chip-diff">filled-darker</span><span class="chip chip-diff">filled-lighter</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>medium / large / extra-large</strong> size stories</div>
+        <div class="add-item">Add all appearance stories</div>
+      </td>
+    </tr>
+
+    <!-- ═══ SELECTION CONTROLS ═══ -->
+    <tr class="section-row"><td colspan="6">Selection Controls</td></tr>
+
+    <tr>
+      <td class="comp-name">Checkbox</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">checked</span><span class="chip chip-ok">indeterminate</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">required</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">checked</span><span class="chip chip-official">indeterminate</span><span class="chip chip-official">disabled</span><span class="chip chip-diff">shape: circular</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>medium</strong> + <strong>large</strong> size stories</div>
+        <div class="add-item">Add <strong>circular shape</strong> story</div>
+        <div class="remove-item">Checkbox has <strong>no small size</strong> officially — only medium &amp; large</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">RadioGroup</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">vertical</span><span class="chip chip-ok">horizontal</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">required</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">vertical</span><span class="chip chip-official">horizontal</span><span class="chip chip-diff">horizontal-stacked</span><span class="chip chip-official">disabled</span><span class="chip chip-official">required</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>horizontal-stacked</strong> layout story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Switch</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">checked</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">label after</span><span class="chip chip-ok">label before</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">checked</span><span class="chip chip-official">disabled</span><span class="chip chip-diff">disabledFocusable</span><span class="chip chip-diff">labelPosition: above</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small</strong> + <strong>medium</strong> size stories</div>
+        <div class="add-item">Add <strong>labelPosition: above</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Slider</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">disabled</span><span class="chip chip-ok">with value</span><span class="chip chip-ok">custom range</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-diff">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">disabled</span><span class="chip chip-diff">vertical</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>medium</strong> size story</div>
+        <div class="add-item">Add <strong>vertical</strong> orientation story</div>
+      </td>
+    </tr>
+
+    <!-- ═══ NAVIGATION ═══ -->
+    <tr class="section-row"><td colspan="6">Navigation &amp; Layout</td></tr>
+
+    <tr>
+      <td class="comp-name">Accordion</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">single expand</span><span class="chip chip-ok">multiple expand</span><span class="chip chip-ok">disabled panel</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">multiple</span><span class="chip chip-diff">collapsible (all-closed)</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>collapsible</strong> story (all panels closeable)</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Tabs</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">transparent</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">underline</span><span class="chip chip-ok">vertical</span><span class="chip chip-ok">disabled</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">transparent</span><span class="chip chip-official">subtle</span><span class="chip chip-diff">subtle-circular</span><span class="chip chip-diff">filled-circular</span><span class="chip chip-official">vertical</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size story</div>
+        <div class="add-item">Add <strong>subtle-circular</strong> appearance</div>
+        <div class="add-item">Add <strong>filled-circular</strong> appearance</div>
+        <div class="remove-item"><strong>underline</strong> is not an official TabList appearance — verify or remove</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Breadcrumb</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">2 levels</span><span class="chip chip-ok">many levels</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">focusMode: tab/arrow</span><span class="chip chip-diff">overflow/truncation</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>large</strong> size story</div>
+        <div class="add-item">Add <strong>overflow / truncated</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Tree</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">subtle</span><span class="chip chip-ok">transparent</span><span class="chip chip-ok">single select</span><span class="chip chip-ok">multi select</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">subtle</span><span class="chip chip-diff">subtle-alpha</span><span class="chip chip-official">transparent</span><span class="chip chip-official">selectionMode</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>subtle-alpha</strong> appearance story</div>
+        <div class="ok-note">✓ Sizes &amp; core states covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">SideNav <span class="custom-tag">custom</span></td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">expanded</span><span class="chip chip-ok">collapsed</span><span class="chip chip-ok">RTL</span><span class="chip chip-ok">with groups</span></div></td>
+      <td colspan="2" style="color:var(--muted);font-style:italic;font-size:12px">Custom — built on NavDrawer, no official equivalent to compare</td>
+      <td class="note"><div class="custom-note">Custom component</div></td>
+    </tr>
+
+    <!-- ═══ OVERLAYS ═══ -->
+    <tr class="section-row"><td colspan="6">Overlays &amp; Popovers</td></tr>
+
+    <tr>
+      <td class="comp-name">Dialog</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">full</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">alert</span><span class="chip chip-ok">controlled</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no official size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">alert</span><span class="chip chip-diff">non-modal (modalType)</span></div></td>
+      <td class="note">
+        <div class="remove-item">Dialog has <strong>no official size prop</strong> — our sizing may be custom; verify</div>
+        <div class="add-item">Add <strong>non-modal</strong> (modalType) story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Drawer</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">full</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">position: start</span><span class="chip chip-ok">position: end</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span><span class="chip chip-official">full</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">type: overlay</span><span class="chip chip-diff">type: inline</span><span class="chip chip-official">position: start/end</span><span class="chip chip-diff">position: bottom</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>bottom position</strong> story</div>
+        <div class="add-item">Add <strong>inline drawer</strong> story</div>
+        <div class="ok-note">✓ Sizes fully covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Popover</td>
+      <td><div class="chips"><span class="chip chip-na">— (none)</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">no arrow</span><span class="chip chip-ok">trap focus</span><span class="chip chip-ok">positioned above</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">small</span><span class="chip chip-diff">medium</span><span class="chip chip-diff">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">brand</span><span class="chip chip-diff">inverted</span><span class="chip chip-diff">openOnHover</span><span class="chip chip-diff">openOnContext</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>small / medium / large</strong> size stories</div>
+        <div class="add-item">Add <strong>brand</strong> + <strong>inverted</strong> appearances</div>
+        <div class="add-item">Add <strong>openOnHover</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Tooltip</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">no arrow</span><span class="chip chip-ok">positioned above</span><span class="chip chip-ok">label relationship</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">normal</span><span class="chip chip-diff">inverted</span><span class="chip chip-official">relationship: label/description</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>inverted</strong> appearance story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">TeachingPopover</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">single step</span><span class="chip chip-ok">multi step</span><span class="chip chip-ok">no dismiss</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">appearance: brand</span><span class="chip chip-official">withinPortal</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>brand</strong> appearance story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">ConfirmDialog <span class="custom-tag">custom</span></td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">destructive</span><span class="chip chip-ok">no description</span></div></td>
+      <td colspan="2" style="color:var(--muted);font-style:italic;font-size:12px">Custom — wraps Dialog, no official equivalent</td>
+      <td class="note"><div class="custom-note">Custom component</div></td>
+    </tr>
+
+    <!-- ═══ FEEDBACK ═══ -->
+    <tr class="section-row"><td colspan="6">Feedback &amp; Status</td></tr>
+
+    <tr>
+      <td class="comp-name">Toast</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">info</span><span class="chip chip-ok">success</span><span class="chip chip-ok">warning</span><span class="chip chip-ok">error</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">info/success/warning/error</span><span class="chip chip-diff">inverted</span><span class="chip chip-diff">pauseOnHover</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>inverted</strong> appearance story</div>
+        <div class="add-item">Add <strong>pauseOnHover</strong> + persistent stories</div>
+        <div class="ok-note">✓ All intents covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">MessageBar</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">info</span><span class="chip chip-ok">success</span><span class="chip chip-ok">warning</span><span class="chip chip-ok">error</span><span class="chip chip-ok">dismissible</span><span class="chip chip-ok">with actions</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">info/success/warning/error</span><span class="chip chip-official">rounded (default)</span><span class="chip chip-diff">shape: square</span><span class="chip chip-official">singleline</span><span class="chip chip-diff">layout: multiline</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>square shape</strong> story</div>
+        <div class="add-item">Add <strong>multiline layout</strong> story</div>
+        <div class="ok-note">✓ All intents covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">ProgressBar</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">determinate</span><span class="chip chip-ok">indeterminate</span><span class="chip chip-ok">success/error/warning</span><span class="chip chip-ok">large thickness</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">color: success/error/warning</span><span class="chip chip-diff">color: brand (default)</span><span class="chip chip-official">thickness: large</span><span class="chip chip-diff">shape: square</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>brand color</strong> explicit story</div>
+        <div class="add-item">Add <strong>square shape</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Spinner</td>
+      <td><div class="chips"><span class="chip chip-ok">tiny</span><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">extra-large</span><span class="chip chip-ok">huge</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">with label</span><span class="chip chip-ok">label above</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">extra-tiny</span><span class="chip chip-official">tiny</span><span class="chip chip-official">extra-small</span><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span><span class="chip chip-official">extra-large</span><span class="chip chip-official">huge</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">primary</span><span class="chip chip-diff">inverted</span><span class="chip chip-official">labelPosition: above</span><span class="chip chip-diff">labelPosition: below</span><span class="chip chip-diff">labelPosition: before</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>extra-tiny</strong> size story</div>
+        <div class="add-item">Add <strong>inverted</strong> appearance story</div>
+        <div class="add-item">Add <strong>labelPosition: below / before</strong> stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Skeleton</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">wave</span><span class="chip chip-ok">pulse</span><span class="chip chip-ok">text block</span><span class="chip chip-ok">card layout</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">pixel sizes on SkeletonItem</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">wave/pulse animation</span><span class="chip chip-official">opaque</span><span class="chip chip-diff">translucent</span><span class="chip chip-official">rectangle</span><span class="chip chip-diff">circle shape</span><span class="chip chip-diff">square shape</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>translucent</strong> appearance story</div>
+        <div class="add-item">Add <strong>circle + square</strong> shape stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Rating</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">controlled</span><span class="chip chip-ok">read-only</span><span class="chip chip-ok">disabled</span><span class="chip chip-ok">10 stars</span><span class="chip chip-ok">with label</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span><span class="chip chip-diff">extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">brand color</span><span class="chip chip-diff">marigold color</span><span class="chip chip-diff">step: 0.5 (half-star)</span><span class="chip chip-official">max: number</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>extra-large</strong> size story</div>
+        <div class="add-item">Add <strong>half-star</strong> (step: 0.5) story</div>
+        <div class="add-item">Add <strong>marigold color</strong> story</div>
+      </td>
+    </tr>
+
+    <!-- ═══ BADGES ═══ -->
+    <tr class="section-row"><td colspan="6">Badges</td></tr>
+
+    <tr>
+      <td class="comp-name">CounterBadge</td>
+      <td><div class="chips"><span class="chip chip-ok">tiny</span><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">filled</span><span class="chip chip-ok">ghost</span><span class="chip chip-ok">brand/danger/important/informative</span><span class="chip chip-ok">dot</span><span class="chip chip-ok">showZero</span><span class="chip chip-ok">overflow</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">tiny–extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">filled</span><span class="chip chip-official">ghost</span><span class="chip chip-official">all colors</span><span class="chip chip-official">dot</span><span class="chip chip-official">showZero</span></div></td>
+      <td class="note"><div class="ok-note">✓ Fully covered</div></td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">PresenceBadge</td>
+      <td><div class="chips"><span class="chip chip-ok">tiny</span><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">available</span><span class="chip chip-ok">away</span><span class="chip chip-ok">busy</span><span class="chip chip-ok">do-not-disturb</span><span class="chip chip-ok">offline</span><span class="chip chip-ok">out-of-office</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">tiny–extra-large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">available/away/busy/dnd/offline/oof</span><span class="chip chip-diff">unknown</span><span class="chip chip-diff">blocked</span><span class="chip chip-diff">outOfOffice modifier</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>unknown</strong> status story</div>
+        <div class="add-item">Add <strong>blocked</strong> status story</div>
+        <div class="add-item">Add <strong>outOfOffice modifier</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">StatusBadge <span class="custom-tag">custom</span></td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">completed</span><span class="chip chip-ok">in-progress</span><span class="chip chip-ok">blocked</span><span class="chip chip-ok">pending</span><span class="chip chip-ok">warning</span></div></td>
+      <td colspan="2" style="color:var(--muted);font-style:italic;font-size:12px">Custom component — no official equivalent</td>
+      <td class="note"><div class="custom-note">Custom component</div></td>
+    </tr>
+
+    <!-- ═══ DISPLAY / CONTENT ═══ -->
+    <tr class="section-row"><td colspan="6">Display &amp; Content</td></tr>
+
+    <tr>
+      <td class="comp-name">Divider</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">horizontal</span><span class="chip chip-ok">vertical</span><span class="chip chip-ok">with label</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">default</span><span class="chip chip-diff">brand</span><span class="chip chip-diff">strong</span><span class="chip chip-diff">subtle</span><span class="chip chip-diff">inset</span><span class="chip chip-diff">alignContent: start/end</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>brand / strong / subtle</strong> appearance stories</div>
+        <div class="add-item">Add <strong>inset</strong> story</div>
+        <div class="add-item">Add <strong>alignContent: start / end</strong> stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Card</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">filled-alternative</span><span class="chip chip-ok">subtle</span><span class="chip chip-ok">clickable</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-diff">filled</span><span class="chip chip-official">filled-alternative</span><span class="chip chip-diff">outline</span><span class="chip chip-official">subtle</span><span class="chip chip-diff">orientation: horizontal</span><span class="chip chip-diff">selected</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>filled</strong> appearance story</div>
+        <div class="add-item">Add <strong>outline</strong> appearance story</div>
+        <div class="add-item">Add <strong>horizontal orientation</strong> story</div>
+        <div class="add-item">Add <strong>selectable card</strong> story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Persona</td>
+      <td><div class="chips"><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span><span class="chip chip-ok">extra-large</span><span class="chip chip-ok">huge</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">available</span><span class="chip chip-ok">busy</span><span class="chip chip-ok">away</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">extra-small–huge</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">available/busy/away</span><span class="chip chip-diff">do-not-disturb</span><span class="chip chip-diff">offline</span><span class="chip chip-diff">out-of-office</span><span class="chip chip-diff">textPosition: below</span><span class="chip chip-diff">textAlignment: center</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>do-not-disturb / offline / out-of-office</strong> presence</div>
+        <div class="add-item">Add <strong>textPosition: below</strong> story</div>
+        <div class="add-item">Add <strong>textAlignment: center</strong> story</div>
+        <div class="ok-note">✓ Sizes fully covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">UserAvatar<br/><small style="font-weight:400;color:var(--muted)">wraps Avatar</small></td>
+      <td><div class="chips"><span class="chip chip-ok">16–128px</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">circular</span><span class="chip chip-ok">square</span><span class="chip chip-ok">available/busy/away/offline</span><span class="chip chip-ok">custom initials</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">16–128px</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">circular/square</span><span class="chip chip-diff">color: colorful/brand/named</span><span class="chip chip-diff">active ring (ring-shadow)</span><span class="chip chip-diff">do-not-disturb / out-of-office</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>color variants</strong> (colorful, brand, named colors)</div>
+        <div class="add-item">Add <strong>active ring</strong> story</div>
+        <div class="add-item">Add <strong>do-not-disturb / out-of-office</strong> presence</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">AvatarGroup</td>
+      <td><div class="chips"><span class="chip chip-ok">16–128px</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">spread</span><span class="chip chip-ok">stack</span><span class="chip chip-ok">pie</span><span class="chip chip-ok">with overflow</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">16–128px</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">spread/stack/pie</span></div></td>
+      <td class="note"><div class="ok-note">✓ Fully covered</div></td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Tag</td>
+      <td><div class="chips"><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">filled</span><span class="chip chip-ok">outline</span><span class="chip chip-ok">brand</span><span class="chip chip-ok">circular</span><span class="chip chip-ok">rounded</span><span class="chip chip-ok">dismissible</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">extra-small</span><span class="chip chip-official">small</span><span class="chip chip-official">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">filled/outline/brand</span><span class="chip chip-official">shape: rounded/circular</span><span class="chip chip-diff">disabled</span><span class="chip chip-diff">selected</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>disabled</strong> state story</div>
+        <div class="add-item">Add <strong>selected</strong> state story</div>
+        <div class="ok-note">✓ Sizes, appearances, shapes covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">InteractionTag</td>
+      <td><div class="chips"><span class="chip chip-ok">extra-small</span><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">filled</span><span class="chip chip-ok">outline</span><span class="chip chip-ok">brand</span><span class="chip chip-ok">dismissible</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">extra-small</span><span class="chip chip-official">small</span><span class="chip chip-official">medium</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">filled/outline/brand</span><span class="chip chip-diff">disabled</span><span class="chip chip-diff">selected</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>disabled</strong> + <strong>selected</strong> state stories</div>
+        <div class="ok-note">✓ Sizes, appearances covered</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">InfoLabel</td>
+      <td><div class="chips"><span class="chip chip-ok">small</span><span class="chip chip-ok">medium</span><span class="chip chip-ok">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">required</span><span class="chip chip-ok">long tooltip</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">small</span><span class="chip chip-official">medium</span><span class="chip chip-official">large</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">required</span></div></td>
+      <td class="note"><div class="ok-note">✓ Fully covered</div></td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Image</td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">square/rounded/circular</span><span class="chip chip-ok">contain/cover</span><span class="chip chip-ok">bordered</span></div></td>
+      <td><div class="chips"><span class="chip chip-na">no size prop</span></div></td>
+      <td><div class="chips"><span class="chip chip-official">fit/shape/bordered</span><span class="chip chip-diff">shadow</span><span class="chip chip-diff">block (full-width)</span></div></td>
+      <td class="note">
+        <div class="add-item">Add <strong>shadow</strong> story</div>
+        <div class="add-item">Add <strong>block</strong> (full-width) story</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Icon <span class="custom-tag">custom</span></td>
+      <td><div class="chips"><span class="chip chip-ok">20</span><span class="chip chip-ok">24</span><span class="chip chip-ok">32</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">default</span><span class="chip chip-ok">brand</span><span class="chip chip-ok">warning</span><span class="chip chip-ok">danger</span></div></td>
+      <td colspan="2" style="color:var(--muted);font-style:italic;font-size:12px">Custom wrapper — icons from @fluentui/react-icons; official sizes: 12/16/20/24/28/32/48px</td>
+      <td class="note">
+        <div class="add-item">Add <strong>16px</strong> + <strong>48px</strong> size stories</div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="comp-name">Typography <span class="custom-tag">custom</span></td>
+      <td><div class="chips"><span class="chip chip-na">—</span></div></td>
+      <td><div class="chips"><span class="chip chip-ok">display → caption2</span><span class="chip chip-ok">regular/semibold/bold</span></div></td>
+      <td colspan="2" style="color:var(--muted);font-style:italic;font-size:12px">Custom wrapper — uses Fluent Text component</td>
+      <td class="note"><div class="custom-note">Custom component</div></td>
+    </tr>
+
+    <!-- Custom with no comparison -->
+    <tr>
+      <td class="comp-name">DataCard <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom KPI card. Stories: WithTrendUp, WithTrendDown, WithDescription, MinimalNoIcon.</td>
+      <td class="note"><div class="custom-note">Custom — no official API</div></td>
+    </tr>
+    <tr>
+      <td class="comp-name">DataTable <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom table built on Fluent Table primitives. Stories: Default, WithSelection, WithPagination, Loading, Empty.</td>
+      <td class="note">
+        <div class="add-item">Add <strong>sticky header</strong> story</div>
+        <div class="add-item">Add <strong>sortable columns</strong> story</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="comp-name">EmptyState <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom component. Stories: NoResults, EmptyFolder, NoDocuments.</td>
+      <td class="note"><div class="custom-note">Custom — no official API</div></td>
+    </tr>
+    <tr>
+      <td class="comp-name">FileUpload <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom component. Stories: Default, Multiple, WithSizeLimit, Required, Disabled, WithError.</td>
+      <td class="note"><div class="custom-note">Custom — no official API</div></td>
+    </tr>
+    <tr>
+      <td class="comp-name">PageHeader <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom page header. Stories: Default, WithDescription, WithBreadcrumbs, WithActions, FullFeatured.</td>
+      <td class="note"><div class="custom-note">Custom — no official API</div></td>
+    </tr>
+    <tr>
+      <td class="comp-name">Stepper <span class="custom-tag">custom</span></td>
+      <td colspan="4" style="color:var(--muted);font-style:italic;font-size:12px">Custom stepper. Stories: Default, Vertical, WithError, AllCompleted.</td>
+      <td class="note"><div class="custom-note">Custom — no official API</div></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<script>
+  function filterTable() {
+    const q = document.getElementById('filterInput').value.toLowerCase();
+    document.querySelectorAll('tbody tr:not(.section-row)').forEach(row => {
+      const name = row.querySelector('.comp-name')?.textContent?.toLowerCase() || '';
+      row.style.display = (!q || name.includes(q)) ? '' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>

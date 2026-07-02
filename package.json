@@ -1,0 +1,114 @@
+{
+  "name": "@lumel/fluent2-ds",
+  "version": "0.1.0-alpha.1",
+  "description": "Fluent 2 Design System component library built on @fluentui/react-components v9",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lumel/fluent2-ds"
+  },
+  "main": "dist/cjs/ds.js",
+  "module": "dist/esm/ds.js",
+  "types": "dist/types/ds.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/ds.js",
+      "require": "./dist/cjs/ds.js",
+      "types": "./dist/types/ds.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src/components/ui",
+    "src/hooks",
+    "src/tokens",
+    "src/themes",
+    "src/ds.ts"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@fluentui/react-components": "^9.0.0",
+    "@fluentui/react-icons": "^2.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@fluentui/react-calendar-compat": "^0.4.2",
+    "@fluentui/react-datepicker-compat": "^0.6.32",
+    "@fluentui/react-timepicker-compat": "^0.4.35",
+    "ajv": "^8.20.0",
+    "react-router-dom": "^6.26.0"
+  },
+  "devDependencies": {
+    "@fluentui/react-components": "^9.74.1",
+    "@fluentui/react-icons": "^2.0.328",
+    "@storybook/addon-a11y": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/preset-create-react-app": "^8.6.18",
+    "@storybook/react": "^8.6.18",
+    "@storybook/react-webpack5": "^8.6.18",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "jest-axe": "^10.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "react-scripts": "5.0.1",
+    "storybook": "^8.6.18",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "audit:tokens": "node scripts/audit-tokens.js",
+    "audit:rtl": "node scripts/audit-rtl.js",
+    "lint:rtl": "node scripts/audit-rtl.js",
+    "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:firefox": "playwright test --project=firefox",
+    "test:e2e:webkit": "playwright test --project=webkit",
+    "analyze:bundle": "node scripts/bundle-size.js",
+    "build:lib:esm": "tsc -p tsconfig.build.json",
+    "build:lib:cjs": "tsc -p tsconfig.cjs.json",
+    "build:lib": "npm run build:lib:esm && npm run build:lib:cjs",
+    "build:lib:clean": "rm -rf dist && npm run build:lib",
+    "prepublishOnly": "npm run build:lib:clean && CI=true npm test -- --watchAll=false"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(@fluentui|@griffel)/)"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

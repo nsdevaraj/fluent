@@ -1,0 +1,56 @@
+{
+  // Library build config — generates dist/ with CJS, ESM, and .d.ts declarations.
+  // Does NOT include the CRA app shell (src/index.tsx, src/App.tsx, src/showcase).
+  //
+  // Usage:
+  //   npm run build:lib          → tsc -p tsconfig.build.json
+  //   npm run build:lib:clean    → rm -rf dist && tsc -p tsconfig.build.json
+  //
+  // Note: For dual CJS+ESM output, use tsup (Phase 5) which calls this config.
+  //       Running tsc directly emits ESM only (module: "esnext").
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Emit output
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist/esm",
+    "declarationDir": "./dist/types",
+
+    // Library target — ES2019 for broad compatibility without heavy transpilation
+    "target": "ES2019",
+    "module": "ESNext",
+    "moduleResolution": "node",
+
+    // Strict — inherited from tsconfig.json; repeated here for clarity
+    "strict": true,
+    "isolatedModules": true,
+
+    // Don't emit broken output on error
+    "noEmitOnError": true
+  },
+  // Only compile DS source — exclude CRA app shell, stories, tests, scripts
+  "include": [
+    "src/ds.ts",
+    "src/components/ui/**/*.ts",
+    "src/components/ui/**/*.tsx",
+    "src/hooks/**/*.ts",
+    "src/tokens/**/*.ts",
+    "src/themes/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/index.tsx",
+    "src/App.tsx",
+    "src/App.test.tsx",
+    "src/showcase/**",
+    "src/stories/**",
+    "src/__tests__/**",
+    "src/setupTests.ts",
+    "src/test-utils.tsx",
+    "scripts/**",
+    "e2e/**"
+  ]
+}
